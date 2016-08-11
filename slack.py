@@ -75,6 +75,11 @@ class SlackStatusPush(StatusReceiverMultiService):
         responsible_users = ', '.join(build.getResponsibleUsers())
         revision = ', '.join([source_stamp.revision for source_stamp in source_stamps])
         project = ', '.join([source_stamp.project for source_stamp in source_stamps])
+        # print(type(source_stamps))
+        # print(source_stamps)
+        # print(source_stamps.changes)
+        # print([c.asDict() for ss in source_stamps for c in ss.changes])
+        commit_messages = '\n'.join([c.asDict()['comments'] for ss in source_stamps for c in ss.changes])
 
         if result == SUCCESS:
             status = "Success"
@@ -109,6 +114,12 @@ class SlackStatusPush(StatusReceiverMultiService):
                 "title": "Branch",
                 "value": branch_names,
                 "short": True
+            })
+
+        if commit_messages:
+            fields.append({
+                "title": "Commit messages",
+                "value": commit_messages,
             })
 
         payload = {
